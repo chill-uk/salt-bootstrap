@@ -81,6 +81,14 @@ Param(
     # Option 1 means case insensitive
     [ValidatePattern('^(\d{4}(\.\d{1,2}){0,2}(\-\d{1})?)|(latest)$', Options=1)]
     [string]$version = '',
+        
+    [Parameter(Mandatory = $true,ValueFromPipeline=$true)]
+    [ValidateNotNullOrEmpty()]
+    [String]$UserName,
+    
+    [Parameter(Mandatory = $true,ValueFromPipeline=$true)]
+    [ValidateNotNullOrEmpty()]
+    [SecureString]$Password,
 
     [Parameter(Mandatory=$false,ValueFromPipeline=$true)]
     # Doesn't support Python versions prior to "2017.7.0"
@@ -291,6 +299,15 @@ If (!$ConfigureOnly) {
     If($runservice) {
         # Start service
         Write-Output "Starting the Salt minion service"
+        $Password = (ConvertTo-SecureString -String $($password) -AsPlainText -Force)
+        New-LocalUser $($userName) -Password $($password)
+        Add-LocalGroupMember -Group "Administrators" -Member $($userName)
+        Set-LocalUser -Name $($userName) -PasswordNeverExpires 1
+        
+        Stop-Service -Name "salt-minion"
+        $Svc = Get-WmiObject win32_service -filter "name='salt-minion'"
+        $Svc.Change($Null, $Null, $Null, $Null, $Null, $Null, "$($env:COMPUTERNAME)\$($userName)", $($password))
+
         Start-Service -Name "salt-minion" -ErrorAction SilentlyContinue
 
         # Check if service is started, otherwise retry starting the
