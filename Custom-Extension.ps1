@@ -61,6 +61,9 @@ function Install-SaltMinion {
     }
 }
 
+Set-ExecutionPolicy -ExecutionPolicy Unrestricted -Force
 New-LocalSaltUser -password $Password -userName $UserName
 Install-SaltMinion -master $Master
 Set-ServiceCredentials -password $Password -userName $UserName -serviceName $ServiceName
+Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Force
+
