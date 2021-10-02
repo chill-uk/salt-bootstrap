@@ -22,7 +22,7 @@ function Set-ServiceCredentials {
 function New-LocalUser {
     param (
         [String]$password,
-        [String]$userName,
+        [String]$userName
     )
     process {
         $passwordSec = (ConvertTo-SecureString -String $($password) -AsPlainText -Force)
@@ -35,7 +35,7 @@ function New-LocalUser {
 
 function Set-LogOnPrivilege {
     param (
-        [String]$userName,
+        [String]$userName
     )
     begin {
         Install-Module -Name 'Carbon' -AllowClobber
@@ -51,7 +51,7 @@ function Set-LogOnPrivilege {
 
 function Install-SaltMinion {
     param (
-        [String]$master,
+        [String]$master
     )  
     process {
         Invoke-WebRequest -Uri https://winbootstrap.saltproject.io -OutFile bootstrap-salt.ps1
