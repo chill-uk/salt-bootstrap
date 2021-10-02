@@ -14,22 +14,9 @@ function Set-ServiceCredentials {
     process {
 
         Stop-Service -Name $($serviceName)
-        cmd /c sc config $Service obj= "$($env:COMPUTERNAME)\$($username)" password= $Password
+        cmd /c sc config $ServiceName obj= "$($env:COMPUTERNAME)\$($username)" password= $Password
+        Start-Sleep -Seconds 5
         Start-Service -Name $($serviceName) 
-    }
-}
-
-function New-LocalUser {
-    param (
-        [String]$password,
-        [String]$userName
-    )
-    process {
-        $passwordSec = (ConvertTo-SecureString -String $($password) -AsPlainText -Force)
-        New-LocalUser $($userName) -Password $($passwordSec)
-        Add-LocalGroupMember -Group "Administrators" -Member $($userName)
-        Set-LocalUser -Name $($userName) -PasswordNeverExpires 1
-        Set-LogOnPrivilege -userName $userName
     }
 }
 
@@ -49,23 +36,31 @@ function Set-LogOnPrivilege {
     }
 }
 
+function New-LocalSaltUser {
+    param (
+        [String]$password,
+        [String]$userName
+    )
+    process {
+        Write-Host "Creating user $($username)"
+        $passwordSec = (ConvertTo-SecureString -String $($password) -AsPlainText -Force)
+        New-LocalUser $($userName) -Password $($passwordSec)
+        Add-LocalGroupMember -Group "Administrators" -Member $($userName)
+        Set-LocalUser -Name $($userName) -PasswordNeverExpires 1
+        Set-LogOnPrivilege -userName $userName
+    }
+}
+
 function Install-SaltMinion {
     param (
         [String]$master
     )  
     process {
         Invoke-WebRequest -Uri https://winbootstrap.saltproject.io -OutFile bootstrap-salt.ps1
-        .\bootstrap-salt.ps1 -minion $env:COMPUTERNAME -master $master
+        . .\bootstrap-salt.ps1 -minion $env:COMPUTERNAME -master $master
     }
 }
 
-New-LocalUser -password $Password -userName $UserName
+New-LocalSaltUser -password $Password -userName $UserName
 Install-SaltMinion -master $Master
 Set-ServiceCredentials -password $Password -userName $UserName -serviceName $ServiceName
-
-
-
-
-
-
-
