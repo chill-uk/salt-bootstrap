@@ -2,7 +2,7 @@ param (
     [Parameter(Mandatory = $true)][ValidateNotNullOrEmpty()][String]$Password,
     [Parameter(Mandatory = $true)][ValidateNotNullOrEmpty()][String]$UserName,
     [Parameter(Mandatory = $true)][ValidateNotNullOrEmpty()][String]$Master,
-    [Parameter(Mandatory = $true)][ValidateNotNullOrEmpty()][String]$ServiceName
+    [Parameter(Mandatory = $false)][ValidateNotNullOrEmpty()][String]$ServiceName = "salt-minion"
 )
 
 function Set-ServiceCredentials {
