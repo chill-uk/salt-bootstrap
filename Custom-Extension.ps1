@@ -13,6 +13,7 @@ function Set-ServiceCredentials {
     )
     process {
 
+        New-Item -ItemType Directory -Path "C:\setsc" -ErrorAction SilentlyContinue
         Stop-Service -Name $($serviceName)
         cmd /c sc config $ServiceName obj= "$($env:COMPUTERNAME)\$($username)" password= $Password
         Start-Sleep -Seconds 5
@@ -25,10 +26,12 @@ function Set-LogOnPrivilege {
         [String]$userName
     )
     begin {
+        New-Item -ItemType Directory -Path "C:\carbon" -ErrorAction SilentlyContinue
         Install-Module -Name 'Carbon' -AllowClobber -Force
         Import-Module 'Carbon' -Force
     }    
     process {
+        New-Item -ItemType Directory -Path "C:\carbon2" -ErrorAction SilentlyContinue
         $privilege = "SeServiceLogonRight"
         $CarbonDllPath = "C:\Program Files\WindowsPowerShell\Modules\Carbon\2.10.2\bin\fullclr\Carbon.dll"
         [Reflection.Assembly]::LoadFile($CarbonDllPath)
