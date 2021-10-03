@@ -26,8 +26,9 @@ function Set-LogOnPrivilege {
         [String]$userName
     )
     begin {
-        New-Item -ItemType Directory -Path "C:\carbon" -ErrorAction SilentlyContinue
+        New-Item -ItemType Directory -Path "C:\installcarbon" -ErrorAction SilentlyContinue
         Install-Module -Name 'Carbon' -AllowClobber -Force
+        New-Item -ItemType Directory -Path "C:\importcarbon" -ErrorAction SilentlyContinue
         Import-Module 'Carbon' -Force
     }    
     process {
