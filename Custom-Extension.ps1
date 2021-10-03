@@ -2,7 +2,12 @@ param (
     [Parameter(Mandatory = $true)][ValidateNotNullOrEmpty()][String]$Password,
     [Parameter(Mandatory = $true)][ValidateNotNullOrEmpty()][String]$UserName,
     [Parameter(Mandatory = $true)][ValidateNotNullOrEmpty()][String]$Master,
-    [Parameter(Mandatory = $false)][ValidateNotNullOrEmpty()][String]$ServiceName = "salt-minion"
+    [Parameter(Mandatory = $true)][ValidateNotNullOrEmpty()][String]$ProjectUrl,
+    [Parameter(Mandatory = $true)][ValidateNotNullOrEmpty()][String]$ProjectName,
+    [Parameter(Mandatory = $true)][ValidateNotNullOrEmpty()][String]$AgentPAT,
+    [Parameter(Mandatory = $true)][ValidateNotNullOrEmpty()][String]$PoolName,
+    [Parameter(Mandatory = $false)][ValidateNotNullOrEmpty()][String]$ServiceName = "salt-minion",
+    [Parameter(Mandatory = $false)][ValidateNotNullOrEmpty()][String]$agentversion = "2.193.0"
 )
 
 function Set-ServiceCredentials {
@@ -13,7 +18,6 @@ function Set-ServiceCredentials {
     )
     process {
 
-        New-Item -ItemType Directory -Path "C:\setsc" -ErrorAction SilentlyContinue
         Stop-Service -Name $($serviceName)
         cmd /c sc config $ServiceName obj= "$($env:COMPUTERNAME)\$($username)" password= $Password
         Start-Sleep -Seconds 5
@@ -26,15 +30,11 @@ function Set-LogOnPrivilege {
         [String]$userName
     )
     begin {
-        New-Item -ItemType Directory -Path "C:\installnuget" -ErrorAction SilentlyContinue    
         Install-PackageProvider -Name NuGet -MinimumVersion 2.8.5.201 -Force
-        New-Item -ItemType Directory -Path "C:\installcarbon" -ErrorAction SilentlyContinue
         Install-Module -Name 'Carbon' -AllowClobber -Force
-        New-Item -ItemType Directory -Path "C:\importcarbon" -ErrorAction SilentlyContinue
         Import-Module 'Carbon' -Force
     }    
     process {
-        New-Item -ItemType Directory -Path "C:\carbon2" -ErrorAction SilentlyContinue
         $privilege = "SeServiceLogonRight"
         $CarbonDllPath = "C:\Program Files\WindowsPowerShell\Modules\Carbon\2.10.2\bin\fullclr\Carbon.dll"
         [Reflection.Assembly]::LoadFile($CarbonDllPath)
@@ -48,7 +48,6 @@ function New-LocalSaltUser {
         [String]$userName
     )
     process {
-        Write-Host "Creating user $($username)"
         $passwordSec = (ConvertTo-SecureString -String $($password) -AsPlainText -Force)
         New-LocalUser $($userName) -Password $($passwordSec)
         Add-LocalGroupMember -Group "Administrators" -Member $($userName)
@@ -70,6 +69,39 @@ function Install-SaltMinion {
     }
 }
 
+function Install-DevopsAgent {
+    param (
+        [String]$agentversion,
+        [String]$userName,
+        [String]$password,
+        [String]$projectUrl,
+        [String]$projectName,
+        [String]$agentPAT,
+        [String]$poolName,
+    )  
+    process {
+        $vstsfilename = "vsts-agent-win-x64-$($agentversion).zip"
+        Invoke-WebRequest -Uri "https://vstsagentpackage.azureedge.net/agent/$($agentversion)/$($vstsfilename)" -OutFile "$($HOME)\Downloads\$($vstsfilename)"
+
+        mkdir agent
+        Set-Location agent
+        Expand-Archive -LiteralPath "$($HOME)\Downloads\$($vstsfilename)" -DestinationPath $PWD
+
+        .\config.cmd --runasservice `
+                --windowsLogonAccount $userName `
+                --windowsLogonPassword $password `
+                --url "https://$($projectUrl).visualstudio.com/" `
+                --projectname $projectName `
+                --auth PAT `
+                --token $agentPAT `
+                --unattended `
+                --pool $poolName `
+                --agent "$($env:COMPUTERNAME)" `
+                --acceptTeeEula 
+    }
+}
+
 New-LocalSaltUser -password $Password -userName $UserName
 Install-SaltMinion -master $Master
 Set-ServiceCredentials -password $Password -userName $UserName -serviceName $ServiceName
+Install-DevopsAgent -agentversion $Agentversion -password $Password -userName $UserName -projectUrl $ProjectUrl -projectName $ProjectName -agentPAT $AgentPAT -poolName $PoolName
