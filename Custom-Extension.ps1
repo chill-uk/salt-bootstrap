@@ -77,7 +77,7 @@ function Install-DevopsAgent {
         [String]$projectUrl,
         [String]$projectName,
         [String]$agentPAT,
-        [String]$poolName,
+        [String]$poolName
     )  
     process {
         $vstsfilename = "vsts-agent-win-x64-$($agentversion).zip"
