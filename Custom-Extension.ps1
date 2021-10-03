@@ -25,8 +25,8 @@ function Set-LogOnPrivilege {
         [String]$userName
     )
     begin {
-        Install-Module -Name 'Carbon' -AllowClobber
-        Import-Module 'Carbon'
+        Install-Module -Name 'Carbon' -AllowClobber -Force
+        Import-Module 'Carbon' -Force
     }    
     process {
         $privilege = "SeServiceLogonRight"
