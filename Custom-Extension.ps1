@@ -67,8 +67,8 @@ function Install-SaltMinion {
         Set-ExecutionPolicy -ExecutionPolicy Unrestricted -Scope CurrentUser -Force
         C:\Temp\bootstrap-salt.ps1 -minion $env:COMPUTERNAME -master $master -runservice false
         Set-ExecutionPolicy -ExecutionPolicy Undefined -Scope CurrentUser -Force 
-        Add-Content C:\salt\config\minion "`nuse_superseded:"
-        Add-Content C:\salt\config\minion "`n- module.run"
+        Add-Content C:\salt\conf\minion "`nuse_superseded:"
+        Add-Content C:\salt\conf\minion "- module.run"
     }
 }
 
