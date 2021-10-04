@@ -21,6 +21,7 @@ function Set-ServiceCredentials {
         Stop-Service -Name "salt-minion"
         cmd /c sc config "salt-minion" obj= ".\$($userName)" password= "$password"
         Write-Output "cmd /c sc config "salt-minion" obj= '.\$($userName)' password= `"$password`"" | Out-File "C:\Temp\SSC.txt"
+        Set-Service –Name "salt-minion" –StartupType "Automatic"
         Start-Sleep -Seconds 5
         Start-Service -Name "salt-minion"
     }
