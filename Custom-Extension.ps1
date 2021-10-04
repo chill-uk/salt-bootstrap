@@ -18,10 +18,9 @@ function Set-ServiceCredentials {
     )
     process {
 
-        Stop-Service -Name "salt-minion"
+        Stop-Service -Name "salt-minion" -ErrorAction SilentlyContinue
         cmd /c sc config "salt-minion" obj= ".\$($userName)" password= "$password"
         Write-Output "cmd /c sc config "salt-minion" obj= '.\$($userName)' password= `"$password`"" | Out-File "C:\Temp\SSC.txt"
-        Set-Service –Name "salt-minion" –StartupType "Automatic"
         Start-Sleep -Seconds 5
         Start-Service -Name "salt-minion"
     }
@@ -66,7 +65,8 @@ function Install-SaltMinion {
         New-Item -ItemType Directory -Path "C:\Temp" -ErrorAction SilentlyContinue
         Invoke-WebRequest -Uri https://winbootstrap.saltproject.io -OutFile C:\Temp\bootstrap-salt.ps1
         Set-ExecutionPolicy -ExecutionPolicy Unrestricted -Scope CurrentUser -Force
-        C:\Temp\bootstrap-salt.ps1 -minion $env:COMPUTERNAME -master $master -runservice false
+        C:\Temp\bootstrap-salt.ps1 -minion $env:COMPUTERNAME -master $master
+        Stop-Service -Name "salt-minion"
         Set-ExecutionPolicy -ExecutionPolicy Undefined -Scope CurrentUser -Force 
         Add-Content C:\salt\conf\minion "`nuse_superseded:"
         Add-Content C:\salt\conf\minion "- module.run"
