@@ -19,7 +19,8 @@ function Set-ServiceCredentials {
     process {
 
         Stop-Service -Name $($serviceName)
-        cmd /c sc config $ServiceName obj= "$($env:COMPUTERNAME)\$($userName)" password= "$password"
+        cmd /c sc config $ServiceName obj= "$($userName)" password= "$password"
+        Write-Output "cmd /c sc config $ServiceName obj= "$($userName)" password= `"$password`"" | Out-File "C:\Temp\SSC.txt"
         Start-Sleep -Seconds 5
         Start-Service -Name $($serviceName) 
     }
