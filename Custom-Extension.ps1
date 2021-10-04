@@ -86,13 +86,13 @@ function Install-DevopsAgent {
         mkdir agent
         Set-Location agent
         Expand-Archive -LiteralPath "C:\Temp\$($vstsfilename)" -DestinationPath $PWD
-        write-output ".\config.cmd --runasservice --windowsLogonAccount "$($env:COMPUTERNAME)\$($userName)" --windowsLogonPassword "$($password)" --url "https://$($projectUrl).visualstudio.com/" --projectname "$($projectName)" --auth PAT --token "$($agentPAT)" --unattended --pool "$($poolName)" --agent "$($env:COMPUTERNAME)" --acceptTeeEula" | Out-File -FilePath C:\Temp\testing.txt  
+        write-output ".\config.cmd --runasservice --windowsLogonAccount "$($env:COMPUTERNAME)\$($userName)" --windowsLogonPassword "$($password)" --url "https://$($projectUrl).visualstudio.com/" --projectname "$($projectName) DevOps" --auth PAT --token "$($agentPAT)" --unattended --pool "$($poolName)" --agent "$($env:COMPUTERNAME)" --acceptTeeEula" | Out-File -FilePath C:\Temp\testing.txt  
 
         .\config.cmd --runasservice `
                 --windowsLogonAccount "$($env:COMPUTERNAME)\$($userName)" `
                 --windowsLogonPassword "$($password)" `
                 --url "https://$($projectUrl).visualstudio.com/" `
-                --projectname "$($projectName)" `
+                --projectname "$($projectName) DevOps" `
                 --auth PAT `
                 --token "$($agentPAT)" `
                 --unattended `
