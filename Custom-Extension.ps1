@@ -19,7 +19,7 @@ function Set-ServiceCredentials {
     process {
 
         Stop-Service -Name $($serviceName)
-        cmd /c sc config $ServiceName obj= "$($env:COMPUTERNAME)\$($username)" password= $Password
+        cmd /c sc config $ServiceName obj= "$($env:COMPUTERNAME)\$($userName)" password= "$password"
         Start-Sleep -Seconds 5
         Start-Service -Name $($serviceName) 
     }
