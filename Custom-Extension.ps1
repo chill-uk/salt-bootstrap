@@ -81,7 +81,7 @@ function Install-DevopsAgent {
     )  
     process {
         $vstsfilename = "vsts-agent-win-x64-$($agentversion).zip"
-        Invoke-WebRequest -Uri "https://vstsagentpackage.azureedge.net/agent/$($agentversion)/$($vstsfilename)" -OutFile "C\Temp\$($vstsfilename)"
+        Invoke-WebRequest -Uri "https://vstsagentpackage.azureedge.net/agent/$($agentversion)/$($vstsfilename)" -OutFile "C:\Temp\$($vstsfilename)"
 
         mkdir agent
         Set-Location agent
