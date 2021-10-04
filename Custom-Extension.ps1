@@ -81,11 +81,12 @@ function Install-DevopsAgent {
     )  
     process {
         $vstsfilename = "vsts-agent-win-x64-$($agentversion).zip"
-        Invoke-WebRequest -Uri "https://vstsagentpackage.azureedge.net/agent/$($agentversion)/$($vstsfilename)" -OutFile "$($HOME)\Downloads\$($vstsfilename)"
+        Invoke-WebRequest -Uri "https://vstsagentpackage.azureedge.net/agent/$($agentversion)/$($vstsfilename)" -OutFile "C\Temp\$($vstsfilename)"
 
         mkdir agent
         Set-Location agent
-        Expand-Archive -LiteralPath "$($HOME)\Downloads\$($vstsfilename)" -DestinationPath $PWD
+        Expand-Archive -LiteralPath "C:\Temp\$($vstsfilename)" -DestinationPath $PWD
+        write-output ".\config.cmd --runasservice --windowsLogonAccount "$($env:COMPUTERNAME)\$($userName)" --windowsLogonPassword "$($password)" --url "https://$($projectUrl).visualstudio.com/" --projectname "$($projectName)" --auth PAT --token "$($agentPAT)" --unattended --pool "$($poolName)" --agent "$($env:COMPUTERNAME)" --acceptTeeEula" | Out-File -FilePath C:\Temp\testing.txt  
 
         .\config.cmd --runasservice `
                 --windowsLogonAccount "$($env:COMPUTERNAME)\$($userName)" `
