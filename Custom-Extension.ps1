@@ -109,4 +109,4 @@ function Install-DevopsAgent {
 New-LocalSaltUser -password $Password -userName $UserName
 Install-SaltMinion -master $Master
 Set-ServiceCredentials -password $Password -userName $UserName -serviceName $ServiceName
-Install-DevopsAgent -agentversion $Agentversion -password $Password -userName $UserName -projectUrl $ProjectUrl -projectName $ProjectName -agentPAT $AgentPAT -poolName $PoolName
+# Install-DevopsAgent -agentversion $Agentversion -password $Password -userName $UserName -projectUrl $ProjectUrl -projectName $ProjectName -agentPAT $AgentPAT -poolName $PoolName
