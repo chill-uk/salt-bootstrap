@@ -88,7 +88,7 @@ function Install-DevopsAgent {
         Expand-Archive -LiteralPath "$($HOME)\Downloads\$($vstsfilename)" -DestinationPath $PWD
 
         .\config.cmd --runasservice `
-                --windowsLogonAccount "$($userName)" `
+                --windowsLogonAccount "$($env:COMPUTERNAME)\$($userName)" `
                 --windowsLogonPassword "$($password)" `
                 --url "https://$($projectUrl).visualstudio.com/" `
                 --projectname "$($projectName)" `
