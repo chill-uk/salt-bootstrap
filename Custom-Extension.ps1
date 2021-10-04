@@ -88,14 +88,14 @@ function Install-DevopsAgent {
         Expand-Archive -LiteralPath "$($HOME)\Downloads\$($vstsfilename)" -DestinationPath $PWD
 
         .\config.cmd --runasservice `
-                --windowsLogonAccount $userName `
-                --windowsLogonPassword $password `
+                --windowsLogonAccount "$($userName)" `
+                --windowsLogonPassword "$($password)" `
                 --url "https://$($projectUrl).visualstudio.com/" `
-                --projectname $projectName `
+                --projectname "$($projectName)" `
                 --auth PAT `
-                --token $agentPAT `
+                --token "$($agentPAT)" `
                 --unattended `
-                --pool $poolName `
+                --pool "$($poolName)" `
                 --agent "$($env:COMPUTERNAME)" `
                 --acceptTeeEula 
     }
