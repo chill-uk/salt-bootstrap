@@ -68,8 +68,8 @@ function Install-SaltMinion {
         C:\Temp\bootstrap-salt.ps1 -minion $env:COMPUTERNAME -master $master
         Stop-Service -Name "salt-minion"
         Set-ExecutionPolicy -ExecutionPolicy Undefined -Scope CurrentUser -Force 
-        Add-Content C:\salt\conf\minion "`nuse_superseded:"
-        Add-Content C:\salt\conf\minion "- module.run"
+        Add-Content "C:\ProgramData\Salt Project\Salt\conf\minion" "`nuse_superseded:"
+        Add-Content "C:\ProgramData\Salt Project\Salt\conf\minion" "- module.run"
     }
 }
 
